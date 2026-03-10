@@ -63,10 +63,35 @@ export function BioHybridInterface({ plants, onStimulus }: BioHybridInterfacePro
     setOutput('');
     
     try {
-      // In a real scenario, we would use the Gemini API here.
-      // For this demo, we'll simulate a bio-influenced response if no API key is present,
-      // or use the actual API if available.
-      
+      // 1. Try to connect to the local Python FastAPI backend
+      try {
+        const response = await fetch('http://localhost:8000/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt: prompt,
+            rms: bioMetrics.rms,
+            variance: bioMetrics.variance,
+            entropy: bioMetrics.entropy,
+            correlation: bioMetrics.correlation
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          await simulateTyping(`[PYTHON BACKEND CONNECTED]\nTemperature Used: ${data.temperature_used.toFixed(2)}\n\n${data.output}`);
+          
+          // Trigger feedback and exit early since backend succeeded
+          triggerFeedback();
+          return;
+        }
+      } catch (backendError) {
+        console.log("Python backend not reachable at http://localhost:8000. Falling back to frontend logic.", backendError);
+      }
+
+      // 2. Fallback: Direct Gemini API call (if backend is not running)
       const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
       
       if (apiKey) {
@@ -115,20 +140,24 @@ The phloem pathways are resonating with ${bioMetrics.correlation > 0.7 ? 'synchr
 (Note: Add a Gemini API key to enable full LLM generation modulated by these bio-signals.)`);
       }
 
-      // Bio-Cybernetic Feedback: Trigger a stimulus based on the interaction
-      if (bioMetrics.entropy > 0.7) {
-        onStimulus('sound');
-      } else if (bioMetrics.correlation > 0.8) {
-        onStimulus('light');
-      } else {
-        onStimulus('water');
-      }
+      triggerFeedback();
 
     } catch (error) {
       console.error("Generation error:", error);
       setOutput("Error: Connection to the bio-computational matrix severed. Please check API configuration.");
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const triggerFeedback = () => {
+    // Bio-Cybernetic Feedback: Trigger a stimulus based on the interaction
+    if (bioMetrics.entropy > 0.7) {
+      onStimulus('sound');
+    } else if (bioMetrics.correlation > 0.8) {
+      onStimulus('light');
+    } else {
+      onStimulus('water');
     }
   };
 
