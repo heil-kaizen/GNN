@@ -1,0 +1,5 @@
+{
+  "name": "Remix: Green Neural Network",
+  "description": "A bioelectric signal analysis dashboard for monitoring and interpreting plant physiological states.",
+  "requestFramePermissions": []
+}

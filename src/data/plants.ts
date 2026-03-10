@@ -1,0 +1,48 @@
+import { PlantSpecies } from '../types';
+
+export const PLANT_CONFIGS: { id: string; name: string; species: PlantSpecies }[] = [
+  { id: 'p1', name: 'Alpha Fern', species: 'Fern' },
+  { id: 'p2', name: 'Beta Succulent', species: 'Succulent' },
+  { id: 'p3', name: 'Gamma Orchid', species: 'Orchid' },
+  { id: 'p4', name: 'Delta Basil', species: 'Basil' },
+  { id: 'p5', name: 'Epsilon Ivy', species: 'Ivy' },
+  { id: 'p6', name: 'Zeta Bamboo', species: 'Bamboo' },
+  { id: 'p7', name: 'Eta Rose', species: 'Rose' },
+  { id: 'p8', name: 'Theta Mint', species: 'Mint' },
+  { id: 'p9', name: 'Iota Aloe', species: 'Aloe' },
+  { id: 'p10', name: 'Kappa Cactus', species: 'Cactus' },
+  { id: 'p11', name: 'Lambda Lily', species: 'Lily' },
+  { id: 'p12', name: 'Mu Tulip', species: 'Tulip' },
+  { id: 'p13', name: 'Nu Daisy', species: 'Daisy' },
+  { id: 'p14', name: 'Xi Lavender', species: 'Lavender' },
+  { id: 'p15', name: 'Omicron Jasmine', species: 'Jasmine' },
+  { id: 'p16', name: 'Pi Bonsai', species: 'Bonsai' },
+  { id: 'p17', name: 'Rho Palm', species: 'Palm' },
+  { id: 'p18', name: 'Sigma Ficus', species: 'Ficus' },
+  { id: 'p19', name: 'Tau Pothos', species: 'Pothos' },
+  { id: 'p20', name: 'Upsilon Snake', species: 'Snake Plant' },
+];
+
+// Base configs for simulation
+export const SPECIES_TRAITS: Record<string, { baseFreq: number; amp: number; noise: number }> = {
+  Fern: { baseFreq: 0.5, amp: 15, noise: 2 },
+  Succulent: { baseFreq: 0.1, amp: 5, noise: 0.5 },
+  Orchid: { baseFreq: 0.3, amp: 10, noise: 1 },
+  Basil: { baseFreq: 0.8, amp: 20, noise: 3 },
+  Ivy: { baseFreq: 0.6, amp: 12, noise: 1.5 },
+  Bamboo: { baseFreq: 0.2, amp: 8, noise: 0.8 },
+  Rose: { baseFreq: 0.4, amp: 18, noise: 2.5 },
+  Mint: { baseFreq: 0.9, amp: 22, noise: 3.5 },
+  Aloe: { baseFreq: 0.15, amp: 6, noise: 0.6 },
+  Cactus: { baseFreq: 0.05, amp: 4, noise: 0.4 },
+  Lily: { baseFreq: 0.35, amp: 14, noise: 1.2 },
+  Tulip: { baseFreq: 0.45, amp: 16, noise: 1.8 },
+  Daisy: { baseFreq: 0.55, amp: 13, noise: 1.4 },
+  Lavender: { baseFreq: 0.7, amp: 11, noise: 2.2 },
+  Jasmine: { baseFreq: 0.65, amp: 15, noise: 1.6 },
+  Bonsai: { baseFreq: 0.25, amp: 9, noise: 0.9 },
+  Palm: { baseFreq: 0.18, amp: 7, noise: 0.7 },
+  Ficus: { baseFreq: 0.32, amp: 10, noise: 1.1 },
+  Pothos: { baseFreq: 0.42, amp: 12, noise: 1.3 },
+  'Snake Plant': { baseFreq: 0.12, amp: 5, noise: 0.5 },
+};
