@@ -3,7 +3,10 @@ from scipy.stats import entropy
 from google import genai
 from google.genai import types
 import os
-from fastapi import FastAPI, HTTPException
+import asyncio
+import json
+import time
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
@@ -22,8 +25,6 @@ app.add_middleware(
 # Define the expected request payload
 class GenerationRequest(BaseModel):
     prompt: str
-    # We can accept pre-calculated metrics from the frontend, 
-    # or raw signals. Here we accept the metrics for simplicity.
     rms: float
     variance: float
     entropy: float
@@ -58,7 +59,6 @@ def generate_bio_modulated_text(prompt: str, bio_features: dict):
     Reflect these biological states subtly in your tone and content.
     """
     
-    # Modulate model temperature based on plant entropy (0.0 to 2.0 scale)
     dynamic_temperature = min(2.0, 0.7 + (bio_features['entropy'] * 0.8))
     
     response = client.models.generate_content(
@@ -99,6 +99,57 @@ async def generate_endpoint(request: GenerationRequest):
 @app.get("/health")
 async def health_check():
     return {"status": "online", "message": "Bio-Hybrid Backend is running."}
+
+# ---------------------------------------------------------
+# 3. WebSocket Streaming (Hardware Integration Point)
+# ---------------------------------------------------------
+@app.websocket("/ws/plants")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    print("Frontend connected to WebSocket stream.")
+    
+    # In a real scenario, this loop would read from a serial port (e.g., ESP32)
+    # or an MQTT broker where the hardware sensors are publishing data.
+    # For now, we generate the signal here on the backend so the frontend is "dumb".
+    
+    num_plants = 20
+    t = 0.0
+    
+    try:
+        while True:
+            t += 0.1
+            signals = []
+            frequencies = []
+            
+            # Generate backend-simulated data (to be replaced by real hardware reads)
+            for i in range(num_plants):
+                base_freq = 0.5 + (i % 3) * 0.2
+                amp = 50.0
+                noise = np.random.normal(0, 5.0)
+                
+                # Simple sine wave + noise
+                voltage = np.sin(t * base_freq * 2 * np.pi) * amp + noise
+                
+                signals.append(float(voltage))
+                frequencies.append(float(base_freq))
+                
+            # Send the data payload to the React frontend
+            payload = {
+                "timestamp": time.time(),
+                "signals": signals,
+                "frequencies": frequencies,
+                "correlations": [] # We can add backend correlation logic here later
+            }
+            
+            await websocket.send_json(payload)
+            
+            # Stream at ~20Hz (50ms delay)
+            await asyncio.sleep(0.05)
+            
+    except WebSocketDisconnect:
+        print("Frontend disconnected from WebSocket stream.")
+    except Exception as e:
+        print(f"WebSocket error: {e}")
 
 if __name__ == "__main__":
     print("Starting Bio-Hybrid Backend on http://localhost:8000")
